@@ -12,14 +12,12 @@ This topic explains how to use the Web Config Transform Extension Buildpack for 
 
 ## <a id='overview'></a> Overview
 
-Typical applications use environment-specific appSettings and connectionStrings to connect to external data repositories. 
-Typically, legacy application settings are injected through a `Web.config` file.  
+Cloud Native Applications are expected to bring in configurations from external sources like environment variables, config servers, etc. 
 
-As per cloud-native principles, an application's build artifacts should not include configuration settings, 
-so an external process must inject environment-specific settings into a cloud application.  
+In applications that run on IIS (e.g. ASP.NET applications), configuration settings are injected through Web.config files.  As per cloud native principles, configuration should stay out of build artifacts. This extension buildpack provides a solution to this problem by using token replacement during ‘cf push’ staging. 
 
 The .NET Framework Web Config Transform Extension Buildpack injects environment-specific appSettings and connectionString values 
-into legacy application containers by performing token replacements during `cf push` staging.  
+by performing token replacements during `cf push` staging.  
 
 To leverage the .NET Framework Web Config Transform Extension Buildpack, complete the following procedures:  
 
