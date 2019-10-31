@@ -67,7 +67,7 @@ To externalize your workload's environment-specific configuration settings, comp
     ```xml
     <connectionStrings>
         <add name="TestDB" 
-             connectionString="Data Source=ReleaseSQLServer;Initial Catalog=TestDB010;User ID=testaccount;Password=ABC123!" 
+             connectionString="Data Source=DebugSQLServer;Initial Catalog=TestDB010;User ID=testaccount;Password=ABC123!" 
              xdt:Transform="SetAttributes" 
              xdt:Locator="Match(name)"/>
     </connectionStrings>
