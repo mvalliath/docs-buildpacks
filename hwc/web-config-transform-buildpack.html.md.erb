@@ -3,7 +3,7 @@ title: Externalizing Configurations for .NET Framework Apps
 owner: Buildpacks
 ---
 
-This topic explains how to use the Web Config Transform Extension Buildpack for ASP.NET apps.  
+This topic explains how to use the Web Config Transform Extension Buildpack for .NET apps.  
 
 ## <a id='prerequisites'></a>Prerequisites
 
@@ -13,20 +13,15 @@ This topic explains how to use the Web Config Transform Extension Buildpack for 
 ## <a id='overview'></a> Overview
 
 Typical applications use environment-specific appSettings and connectionStrings to connect to external data repositories. 
-Typically, legacy Web and WCF application settings are injected through a `Web.config` file.  
+Typically, legacy application settings are injected through a `Web.config` file.  
 
 As per cloud-native principles, an application's build artifacts should not include configuration settings, 
 so an external process must inject environment-specific settings into a cloud application.  
 
-The Web Config Transform Extension Buildpack injects environment-specific appSettings and connectionString values 
-into legacy Web and WCF application containers by performing token replacements during `cf push` staging.  
+The .NET Framework Web Config Transform Extension Buildpack injects environment-specific appSettings and connectionString values 
+into legacy application containers by performing token replacements during `cf push` staging.  
 
-Web and WCF applications are created with `Web.Debug.config` and `Web.Release.config` files as the 
-"_debug_" and "_release_" transform versions of their `Web.config` file. 
-You must externalize the configurations in these files and establish a Spring Cloud Config Server 
-to link your app to the externalized settings.  
-
-To leverage the Web Config Transform Extension Buildpack, complete the following procedures:  
+To leverage the .NET Framework Web Config Transform Extension Buildpack, complete the following procedures:  
 
 1. [Identify Environment Dependent Configurations and Externalize](#tokenize)
 1. [Create a Parameterized Cloud Foundry App Manifest](#create-manifest)
