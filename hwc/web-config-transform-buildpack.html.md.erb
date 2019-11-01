@@ -24,7 +24,7 @@ To leverage the .NET Framework Web Config Transform Extension Buildpack, complet
 1. [Identify Environment Dependent Configurations and Externalize](#tokenize)
 1. [Create a Cloud Foundry App Manifest](#create-manifest)
 1. [Add Web Config Transformations](#transformations)
-1. [Establish a Spring Cloud Config Server](#move-to-spring-cloud)
+1. [Move Config to Git Repoistory](#move-to-git-repo)
 1. [Push the App](#push-app)
 
 ## <a id='tokenize'></a> Identify Environment-Dependent Configurations and Externalize
@@ -189,7 +189,7 @@ By default, all web apps and WCF apps are created with **Debug** and **Release**
     cf push
     ```
 
-## <a id='move-to-spring-cloud'></a> Move Config Settings to Git Repository  
+## <a id='move-to-git'></a> Move Config Settings to Git Repository  
 
 A multi-environment, production-ready deployment configuration can be achieved by using Spring Cloud Config Server 
 backed by a git repository data source.
@@ -241,17 +241,6 @@ Name the files `YOUR-APPLICATION`-`APP-ENVIRONMENT`.yaml.
      connectionStrings:
        MyDB: "Data Source=prodserver;Initial Catalog=mydb;User ID=serviceacc4;Password=PaKsAsEwWoOrOdT3"
     ```    
-
-### <a id='copy-to-git'></a> Move Your Configurations to a Spring Cloud Config Server GitHub Repository
-
-Your Spring Cloud Config Server must be backed by transforms stored in a git repository data source.  
-
-To move your configuration settings to a git repository, complete the following steps:  
-
-1. Create a network accessible git repository specifically for storing this application's transform configuration files.  
-
-1. Copy the configuration files created in [Create Configurations for Spring Cloud Config Server](#create-for-spring-cloud), above to the new git repository.  
-
 
 ### <a id='create-spring-cloud-service'></a> Create a Configuration Service for Spring Cloud Config Server
 
