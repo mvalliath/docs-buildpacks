@@ -125,7 +125,9 @@ property.
   
 1. Add `key:value` pairs to the manifest for each the Web Config file's tokenized settings. 
 
-
+<br>
+    ***Reminder***: token replacements with environment variables is solely for testing purposes, to ensure the tokens are being replaced correctly. Config settings will eventually be externalized using git repositories and Spring Cloud Config Server, which we will complete in steps below. 
+<br>
 
     Below is a sample added referring to the connection string 
     ```yaml
@@ -143,41 +145,6 @@ property.
         needed by your application. The values you provide should be your debug/development 
         environment's connection values.
     </p>
-
-
-1. Review the resulting manifest file. The manifest file should adhere to the following format:
-<br>
-    **Reminder**: token replacements with Environment variables is only for experimental activities. Config settings should be externalized using git repositories and Spring Cloud Config Server.
-<br>
-    ```yaml
-    applications:
-    - name: APP-NAME
-      stack: windows
-      buildpacks:
-      - https://github.com/cloudfoundry-community/web-config-transform-buildpack/releases/download/VERSION/web-config-transform-buildpack-VERSION.zip
-      - hwc_buildpack
-      env:
-        "SETTING-NAME": "SETTING-VALUE"
-    ```
-
-    Where:  
-    * `APP-NAME` is your app's name.  
-    * `VERSION` is the buildpack version.   
-    * `SETTING-NAME` is the name of a configuration setting used by your app. 
-    * `SETTING-VALUE` is the development value of the setting. 
-
-    For example:
-
-    ```yaml
-    applications:
-    - name: sampleapp
-      stack: windows
-      buildpacks:
-      - https://github.com/cloudfoundry-community/web-config-transform-buildpack/releases/download/v1.1.5/web-config-transform-buildpack-v1.1.5.zip
-      - hwc_buildpack
-      env:
-        "connectionStrings:MyDB": "Data Source=ReleaseSQLServer;Initial Catalog=MyReleaseDB;User ID=serviceacc3;Password=PaKsAsEwWoOrOdT3"
-    ```
 
 ### <a id='test-push'></a> Validation Test the App
 
