@@ -23,6 +23,7 @@ To leverage the .NET Framework Web Config Transform Extension Buildpack, complet
 
 1. [Identify Environment Dependent Configurations and Externalize](#tokenize)
 1. [Create a Cloud Foundry App Manifest](#create-manifest)
+1. [Add Web Config Transformations](#transformations)
 1. [Establish a Spring Cloud Config Server](#move-to-spring-cloud)
 1. [Push the App](#push-app)
 
@@ -33,7 +34,7 @@ outside of your application.
 
 To externalize your workload's environment-specific configuration settings, complete the following steps:  
 
-1. Backup your application's `Web.config` file, and its transform files (e.g. `Web.Debug.config`,`Web.Release.config`)  
+1. Backup your application's `Web.config` file, and its transform files (e.g. `Web.Debug.Config`,`Web.Release.Config`)  
 
 1. Identify configuration items (in `Web.config` files) that are environment-dependent that need to be externalized.
 
@@ -55,7 +56,7 @@ with tokens of following the format `#{configPath:key}`.
     </connectionStrings>
     ```
 
-    Web.Release.config
+    Web.Release.Config
     ```xml
     <connectionStrings>
         <add name="MyDB" 
@@ -69,7 +70,7 @@ with tokens of following the format `#{configPath:key}`.
 
     Web.Config (no change)
 
-    Web.Release.config
+    Web.Release.Config
     ```xml
     <connectionStrings>
         <add name="MyDB" 
@@ -124,7 +125,6 @@ property.
 
   
 1. Add `key:value` pairs to the manifest for each the Web Config file's tokenized settings. 
-
 <br>
     ***Reminder***: token replacements with environment variables is solely for testing purposes, to ensure the tokens are being replaced correctly. Config settings will eventually be externalized using git repositories and Spring Cloud Config Server, which we will complete in steps below. 
 <br>
@@ -146,10 +146,40 @@ property.
         environment's connection values.
     </p>
 
-### <a id='test-push'></a> Validation Test the App
+## <a id='tokenize'></a> Add Web Config Transformations
 
-1. To verify your config settings are properly transformed by 
-building and pushing your app to Cloud Foundry, run the following command:   
+By default, all web apps and WCF apps are created with **Debug** and **Release** configurations and corresponding web config transformation files (`Web.Debug.Config`, `Web.Release.Config`).
+
+1. Add required transformations to `Web.Release.Config` 
+<br>
+   Sample `Web.Release.Config` with transformations
+<br>
+
+    ```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <!-- For Cloud Foundry -->
+    <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+      <connectionStrings  xdt:Transform="Replace">
+        <add name="MyDB" connectionString="#{connectionStrings:MyDB}" providerName="System.Data.SqlClient"/>
+      </connectionStrings>
+
+      <system.serviceModel>
+        <client xdt:Transform="Replace">
+
+          <endpoint 
+            address="#{client:Default_IMyLogService:address}" 
+            binding="#{client:Default_IMyLogService:binding}" 
+            bindingConfiguration="#{client:Default_IMyLogService:bindingConfiguration}"
+            contract="ServiceProxy.IMyLogService" name="Default_IMyLogService" />
+
+        </client>
+      </system.serviceModel>
+
+    </configuration>
+    ```
+
+1.  Build and push the application to Cloud Foundry to verify that your config settings are properly transformed:  
 
     ```script
     cf push
