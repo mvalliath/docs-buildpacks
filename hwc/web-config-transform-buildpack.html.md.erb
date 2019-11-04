@@ -27,7 +27,8 @@ To leverage the .NET Framework Web Config Transform Extension Buildpack, complet
 1. [Move Config to Git Repoistory](#move-to-git-repo)
 1. [Create Spring Cloud Service](#create-spring-cloud-service)
 1. [Bind Config Service to App](#bind-service-to-app)
-1. [Push the App](#push-app)
+1. [Add ASPNETCORE_ENV Variable to Manifest](#add-aspnetcore-env)
+1. [Push App By Parameterized Environment Name](#push-app)
 
 ## <a id='tokenize'></a> Identify Environment-Dependent Configurations and Externalize
 
@@ -322,21 +323,35 @@ Your app manifest file must be modified so it accepts configuration values from 
       - my_configserver
     ```
 
-## <a id='add-aspnetcore-env'></a> Add ASPNETCORE_ENVIRONMENT variable to App Manifest 
-In order for your config server to target the right configuration, add the ASPNETCORE_ENVIRONMENT variable to the `env` section of your app manifest:
+## <a id='add-aspnetcore-env'></a> Add ASPNETCORE_ENVIRONMENT Variable to App Manifest 
+In order for your config server to target the right configuration, add the `ASPNETCORE_ENVIRONMENT` variable to the `env` section of your app manifest with the value of `((env))`
 
+    ```yaml
+    ---
+    applications:
+    - name: sampleapp
+      stack: windows
+      buildpacks: 
+        - web_config_transform_buildpack
+        - hwc_buildpack
+      env:
+        ASPNETCORE_ENVIRONMENT: ((env))
 
-## <a id='push-app'></a> Push the App
+      services:
+      - my_configserver
+    ```
+
+## <a id='push-app'></a> Push the App By Parameterized Environment Name 
 
 You can now push your app using your parameterized configuration.
 
 1. To push your app, run the following command:  
 
     ```script
-    cf push --var env=CD-STEP
+    cf push --var env=ENVIRONMENT
     ```
 <br>
-    Where `CD-STEP` is the suffix used on your Web.config external settings YAML file's filename, such as `Development`, `QA`, `UAT`, or `Production`.  
+    Where `ENVIRONMENT` is the environment you wish to target such as `Development`, `Production`, `QA`, `UAT`, etc. These will be the environments specified in your configuration repository.
 <br>
     For example:  
 
@@ -344,7 +359,7 @@ You can now push your app using your parameterized configuration.
     cf push --var env=Production
     ```
 
-1. To confirm your app runs using your WebConfig Transform, 
+1. To confirm your app is running with the correct environment,
 review your logs for `WebConfig Transform Buildpack execution`:   
 
     ```
@@ -355,6 +370,34 @@ review your logs for `WebConfig Transform Buildpack execution`:
     -----> Config server binding found...
     ```
 
+## <a id='push-app'></a> Special Behavior for `appSettings` and `connectionStrings`
+
+This buildpack makes it possible to externalize appSettings and connectionString values in your Web.config without using tokenized values. 
+
+In this case simply include the values in your yaml config files on your Git repository ({YOUR-APP}.production.yml, YOUR-APP}.development.yml, etc.)
+<br>
+    For example:
+<br>
+
+    sampleapp-Development.yaml
+
+    ```yaml
+    appSettings:
+      Setting1: "development setting"
+     connectionStrings:
+       MyDB: "Data Source=devserver;Initial Catalog=mydb;User ID=xxxx;Password=xxxx"
+    ```
+
+    sampleapp-Production.yaml
+
+    ```yaml
+    appSettings:
+      Setting1: "production setting"
+     connectionStrings:
+       MyDB: "Data Source=prodserver;Initial Catalog=mydb;User ID=xxxx;Password=xxxx"
+    ```  
+
+This buildpack can inject appSettings and connectionStrings values based on environment-specific yaml config files even if replacement tokens are not present in Web.Release.Config file. 
 
 ## <a id='trouble'></a> Troubleshooting
 
