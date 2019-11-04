@@ -25,6 +25,8 @@ To leverage the .NET Framework Web Config Transform Extension Buildpack, complet
 1. [Create a Cloud Foundry App Manifest](#create-manifest)
 1. [Add Web Config Transformations](#transformations)
 1. [Move Config to Git Repoistory](#move-to-git-repo)
+1. [Create Spring Cloud Service](#create-spring-cloud-service)
+1. [Bind Config Service to App](#bind-service-to-app)
 1. [Push the App](#push-app)
 
 ## <a id='tokenize'></a> Identify Environment-Dependent Configurations and Externalize
@@ -242,12 +244,12 @@ Name the files `YOUR-APPLICATION`-`APP-ENVIRONMENT`.yaml.
        MyDB: "Data Source=prodserver;Initial Catalog=mydb;User ID=serviceacc4;Password=PaKsAsEwWoOrOdT3"
     ```    
 
-### <a id='create-spring-cloud-service'></a> Create a Configuration Service for Spring Cloud Config Server
+## <a id='create-spring-cloud-service'></a> Create a Configuration Service for Spring Cloud Config Server
 
-The Web Config Transform Extension Buildpack requires a configuration file pointing to your transform configurations 
+The .NET Web Config Transform Extension Buildpack requires a configuration file pointing to your transform configurations 
 GitHub repository.  
 
-1. To confirm the name of the config servers available in your CF Marketplace, run the following command:  
+1. Ensure you have a config server available in your CF marketplace. To confirm the name of the config server available in your CF Marketplace, run the following command:  
 
     ```
     cf marketplace
@@ -255,8 +257,10 @@ GitHub repository.
 
     Review the return and determine whether you have either `p.config-server` or `p-config-server`.  
 
-1. Create a text file for configuration server settings with the following content:  
-
+1. Create a JSON text file for configuration server settings. This should include your configuration Git repository. 
+<br>
+  For example:  
+<br> 
     ```json
     {
         "git" : { 
@@ -267,19 +271,19 @@ GitHub repository.
     ```
 
     Where:  
-    * `ACCOUNT-ID` is the is the github account ID.  
-    * `CONFIG-REPO` is your github configuration repository.   
+    * `ACCOUNT-ID` is your Git repository account ID.  
+    * `CONFIG-REPO` is the name of your configuration Git repository created in the step above. 
 
 1. Save the text file as a JSON file, for example `config-server.json`.  
    <p class='note'><strong>Note:</strong> Ensure file is not BOM-encoded.</p>
-1. To create a config server using your configuration file, run the following command:  
+1. Create a config server using your configuration file and the `cf create service` command:  
 
     ```script
     cf create-service CONFIG-SERVER-MARKET standard SERVER-NAME  -c .\CONFIG-FILE
     ```
 
     Where:  
-    * `CONFIG-SERVER-MARKET` is the name of the config server available in your CF Marketplace.
+    * `CONFIG-SERVER-MARKET` is the name of the config server available in your CF Marketplace (`p.config-server` or `p-config-server`)
     * `SERVER-NAME` is the name for your config server.  
     * `CONFIG-FILE` is the filename of your server config json file.  
 
@@ -289,51 +293,22 @@ GitHub repository.
     $ cf create-service p.config-server standard my_configserver  -c .\config-server.json
     </pre>
 
-### <a id='parameterize-manifest'></a> Configure Your App Manifest File for Spring Cloud Server
 
-Your app manifest file must be modified so it accepts configuration values from your externalized gitHub repository values.
+## <a id='bind-service-to-app'></a> Bind Config Service to App Using Manifest 
+
+Your app manifest file must be modified so it accepts configuration values from your externalized Git repository values.
 
 1. Backup your app manifest file.  
 
-1. To parameterize your environment string, replace your manifest's hardcoded `env` value with `ASPNETCORE_ENVIRONMENT: ((env))` using the following format:  
+1. To bind your config server to your app, add a new `services` section to your app manifest file with the following format:
 
-    ```yaml
-    env:
-      ASPNETCORE_ENVIRONMENT: ((env))     
-    ```
-
-1. To bind your config server to your app, add a new `services` section to your app manifest file 
-using the following format:
-
-    ```yaml
-    services:
-    - SERVER-NAME     
-    ```
-
+<br> 
     Where `SERVER-NAME` is the name for your config server.  
 <br>
 
-1. Review the resulting manifest file. The manifest file should adhere to the following format:
-    
-    ```yaml
-    applications:
-    - name: sampleapp
-      stack: windows
-      buildpacks:
-      - https://github.com/cloudfoundry-community/web-config-transform-buildpack/releases/download/VERSION/web-config-transform-buildpack-VERSION.zip
-      - hwc_buildpack
-      env:
-        ASPNETCORE_ENVIRONMENT: ((env))  
-
-      services:
-      - SERVER-NAME     
-    ```
-
-    Where:  
-    * `VERSION` is the buildpack version.  
-    * `SERVER-NAME` is the name for your config server. 
-    
-    For example:
+<br>
+    For example: 
+<br>
 
     ```yaml
     ---
@@ -341,14 +316,15 @@ using the following format:
     - name: sampleapp
       stack: windows
       buildpacks: 
-        - https://github.com/cloudfoundry-community/web-config-transform-buildpack/releases/download/v1.1.5/Pivotal.Web.Config.Transform.Buildpack-win-x64-1.1.5.zip
+        - web_config_transform_buildpack
         - hwc_buildpack
-      env:
-        ASPNETCORE_ENVIRONMENT: ((env))
-
       services:
       - my_configserver
     ```
+
+## <a id='add-aspnetcore-env'></a> Add ASPNETCORE_ENVIRONMENT variable to App Manifest 
+In order for your config server to target the right configuration, add the ASPNETCORE_ENVIRONMENT variable to the `env` section of your app manifest:
+
 
 ## <a id='push-app'></a> Push the App
 
