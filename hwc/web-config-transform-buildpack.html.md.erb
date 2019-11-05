@@ -112,7 +112,7 @@ To configure your workload's Cloud Foundry app manifest for token replacement, c
 
 1. Open the app manifest file in a text editor.
 
-1. Add a reference for the .NET Web Config Transform Buildpack to the manifest file's `buildpacks` 
+1. Add a reference for the .NET Framework Web Config Transform Extension Buildpack to the manifest file's `buildpacks` 
 property.  
 
     ```yaml
@@ -248,8 +248,8 @@ Name the files `YOUR-APPLICATION`-`APP-ENVIRONMENT`.yaml.
 
 ## <a id='create-spring-cloud-service'></a> Create a Configuration Service for Spring Cloud Config Server
 
-The .NET Web Config Transform Extension Buildpack requires a configuration file pointing to your transform configurations 
-GitHub repository.  
+The .NET Framework Web Config Transform Extension Buildpack requires a configuration file pointing to your transform configurations 
+Git repository.  
 
 1. Ensure you have a config server available in your CF marketplace. To confirm the name of the config server available in your CF Marketplace, run the following command:  
 
