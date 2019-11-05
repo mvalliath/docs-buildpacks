@@ -221,8 +221,8 @@ Name the files `YOUR-APPLICATION`-`APP-ENVIRONMENT`.yaml.
     * `APP-ENVIRONMENT` is the identifier name for a unique environment.  
 <br> 
 
-    <p class='note'><strong>Note:</strong> You will later use these environment names ("Development", "Debug", "Production") in your app manifest's
-    <code>ASPNETCORE_ENVIRONMENT</code> environment variable value to target different environments 
+    <p class='note'><strong>Note:</strong> You will later use these environment names ("Development", "Debug", "Production") as values for the
+    <code>ASPNETCORE_ENVIRONMENT</code> environment variable  to target different environments
     </p>
 
 <br>
@@ -242,6 +242,8 @@ Name the files `YOUR-APPLICATION`-`APP-ENVIRONMENT`.yaml.
      connectionStrings:
        MyDB: "Data Source=prodserver;Initial Catalog=mydb;User ID=serviceacc4;Password=PaKsAsEwWoOrOdT3"
     ```    
+
+Now that your values are in a Git repository, you can remove the key:value pairs from the `env` section of your `manifest.yml`. We will later add one variable into this section, but it should be empty for now. 
 
 ## <a id='create-spring-cloud-service'></a> Create a Configuration Service for Spring Cloud Config Server
 
