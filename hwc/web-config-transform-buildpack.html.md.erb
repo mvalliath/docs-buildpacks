@@ -28,6 +28,10 @@ To leverage the .NET Framework Web Config Transform Extension Buildpack, complet
 1. [Add ASPNETCORE_ENV Variable to Manifest](#add-aspnetcore-env)
 1. [Push App By Parameterized Environment Name](#push-app)
 
+<p class='note'><strong>Note:</strong> This buildpack can inject appSettings and 
+    connectionStrings regardless of whether the replacement tokens are present in the <code>Web.Release.Config</code> file. For more information please see the Special Behaviors section at the end.
+</p>
+
 ## <a id='tokenize'></a> Identify Environment-Dependent Configurations and Externalize
 
 Your `Web.config` environment-specific settings will be replaced with placeholder tokens and their values externalized 
